@@ -1,1 +1,28 @@
+import heapq
+from collections import defaultdict
 
+class Solution:
+    def getSkyline(self, buildings):
+        events = []
+        for l, r, h in buildings:
+            events.append((l, -h, r))  # entering event
+            events.append((r, 0, 0))   # leaving event
+        
+        events.sort()
+        
+        result = []
+        heap = [(0, float('inf'))]  # (height, end)
+        
+        for x, neg_h, r in events:
+            while heap[0][1] <= x:
+                heapq.heappop(heap)
+            
+            if neg_h != 0:
+                heapq.heappush(heap, (neg_h, r))
+            
+            current_height = -heap[0][0]
+            
+            if not result or result[-1][1] != current_height:
+                result.append([x, current_height])
+        
+        return result
